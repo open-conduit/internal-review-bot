@@ -31,7 +31,8 @@
           "introspection.notes.resolve",
           "github.issue.list",
           "github.issue.create",
-          "github.issue.comment"
+          "github.issue.comment",
+          "github.pr.resolve"
         ],
         "read_scopes": []
       },
@@ -96,6 +97,7 @@
             "github.pr.view",
             "github.pr.comment",
             "github.pr.reply",
+            "github.pr.resolve",
             "github.pr.review",
             "github.checks",
             "github.attachment.get",
@@ -189,6 +191,7 @@
             "github.pr.view",
             "github.pr.comment",
             "github.pr.reply",
+            "github.pr.resolve",
             "github.pr.review",
             "github.checks",
             "github.attachment.get",
@@ -282,6 +285,7 @@
             "github.pr.view",
             "github.pr.comment",
             "github.pr.reply",
+            "github.pr.resolve",
             "github.pr.review",
             "github.checks",
             "github.attachment.get",

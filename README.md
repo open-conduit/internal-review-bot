@@ -12,7 +12,7 @@ When a pull request opens in a repository it watches (we run it on `open-conduit
 2. **It reviews.** An agent reads the PR, the issue it closes and the changed code. It checks the change against [our guidelines](plugin/skills/review-pr/guidelines.md), [Open Conduit's core principles](plugin/skills/review-pr/principles.md) and the repository's own `CLAUDE.md`, and runs the tests when it needs to be sure.
 3. **It posts one review as its own GitHub App** (`openconduit-reviewer[bot]`). Each finding is inline, graded P1 (blocks merge) or P2 (should fix), and cites the rule it comes from. Any P1 means it requests changes; otherwise it approves.
 4. **It waits without running.** Between reviews nothing is running and nothing polls. The Work parks until something happens on the PR.
-5. **It follows up.** A push wakes it to review only what changed. A reply to one of its comments gets an answer. When the last P1 is fixed, it approves. When the PR merges or closes, its Work completes.
+5. **It follows up.** A push wakes it to review only what changed. A reply to one of its comments gets an answer. It resolves each of its threads once the point is addressed, and when the last P1 is fixed, it approves. When the PR merges or closes, its Work completes.
 6. **It reports what gets in its way.** When a tool refuses it, a doc is wrong or it has to work around something, it files a report with Open Conduit as it goes. Each morning a triage run per repository groups the reports by cause and files each one as an issue in Open Conduit's own tracker, or comments on the issue that already covers it.
 
 A person still presses merge.
@@ -23,8 +23,8 @@ It's already earning its keep. On [open-conduit#327](https://github.com/open-con
 
 | File | What it is | Lines |
 | --- | --- | --- |
-| [`.open-conduit/config.json`](.open-conduit/config.json) | Which repositories to watch, which PRs become Work, which agent runs, and exactly what it may do | 355 (three near-identical repository scopes) |
-| [`plugin/skills/review-pr/SKILL.md`](plugin/skills/review-pr/SKILL.md) | The playbook: how to review, when to approve, how to follow up | 64 |
+| [`.open-conduit/config.json`](.open-conduit/config.json) | Which repositories to watch, which PRs become Work, which agent runs, and exactly what it may do | 359 (three near-identical repository scopes) |
+| [`plugin/skills/review-pr/SKILL.md`](plugin/skills/review-pr/SKILL.md) | The playbook: how to review, when to approve, how to follow up | 66 |
 | [`plugin/skills/review-pr/guidelines.md`](plugin/skills/review-pr/guidelines.md) | What we look for, and how severe each kind of finding is | 19 |
 | [`plugin/skills/review-pr/principles.md`](plugin/skills/review-pr/principles.md) | A copy of Open Conduit's core principles (refresh with `scripts/sync-principles.sh`) | 124 |
 
@@ -134,7 +134,7 @@ Add a scope for the bot to sit under. It sets the most the reviewer may ever do,
     "operations": [
       "read_context", "wait", "declare_outcome",
       "github.context", "github.issue.view",
-      "github.pr.list", "github.pr.view", "github.pr.comment", "github.pr.reply", "github.pr.review",
+      "github.pr.list", "github.pr.view", "github.pr.comment", "github.pr.reply", "github.pr.resolve", "github.pr.review",
       "github.checks", "github.attachment.get", "github.wait",
       "introspection.report-issue", "introspection.correction", "introspection.problem",
       "introspection.evidence", "introspection.reports", "introspection.report.resolve", "introspection.notes.resolve",

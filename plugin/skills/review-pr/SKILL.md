@@ -21,6 +21,7 @@ Everything that touches GitHub goes through Open Conduit's toolbelt. Call an ope
 | `github.checks` | `number` | the checks on the PR's head |
 | `github.pr.review` | `number`, `event`, `body`, `comments`? | submit one review: `event` is `approve`, `request_changes` or `comment`; inline `comments` are `{path, line, side?, body}` on lines of the diff |
 | `github.pr.reply` | `number`, `comment_id`, `body` | reply in an inline review thread |
+| `github.pr.resolve` | `number`, `comment_id` | resolve the review thread holding that comment |
 | `github.pr.comment` | `number`, `body` | comment on the PR's conversation |
 | `github.wait` | `reason` | park until the PR changes: a push, a comment or review, a check result, or its merge or close. Your own reviews and comments never wake you |
 
@@ -40,8 +41,8 @@ Everything that touches GitHub goes through Open Conduit's toolbelt. Call an ope
 
 ## Later turns
 
-- **New commits:** look only at what changed since your last review (`git fetch` the head again and diff from the commit you last reviewed). Check whether your earlier points were addressed. Submit a new review only if you have something new to say or a point is now resolved; say which. When the last open P1 is resolved, `approve`, so your earlier request for changes no longer blocks the merge. If a new P1 turns up after you approved, `request_changes` again.
-- **A reply to one of your comments:** answer it where the event says to. If the author has convinced you, say so plainly, and `approve` if that was the last open P1.
+- **New commits:** look only at what changed since your last review (`git fetch` the head again and diff from the commit you last reviewed). Check whether your earlier points were addressed. Submit a new review only if you have something new to say or a point is now resolved; say which. For each of your own inline comments the new commits address, say so in its thread with `github.pr.reply`, then resolve the thread with `github.pr.resolve` and the same `comment_id`. When the last open P1 is resolved, `approve`, so your earlier request for changes no longer blocks the merge. If a new P1 turns up after you approved, `request_changes` again.
+- **A reply to one of your comments:** answer it where the event says to. If the author has convinced you, say so plainly, resolve the thread with `github.pr.resolve`, and `approve` if that was the last open P1.
 - After either, wait again with `github.wait` and end with `done`, as in the first turn.
 - **Merged or closed:** do nothing more. End with `finished`.
 
@@ -58,6 +59,7 @@ Put the verdict in `summary`, for example `requested changes: 2 P1, 1 P2` or `ap
 
 - **Findings, not commentary.** Every comment names a concrete problem, says why it matters, and where possible suggests the fix. No praise, no summaries of what the PR does, no "consider maybe".
 - **Grade every finding P1 or P2**, as [guidelines.md](guidelines.md) defines them, and start each comment with its grade (`P1:` or `P2:`). Order the review body P1s first. Don't post P3s at all.
+- **Resolve only your own threads.** Resolve a thread you opened once its point is settled. Leave other reviewers' threads to them.
 - **Inline where you can.** Put each finding on the line it's about. Keep the review body to a short verdict and anything that doesn't belong on one line.
 - **Cite the rule.** When a finding comes from the guidelines or a principle, name it ("principle 3: the core owns orchestration semantics").
 - **Be sure.** If you aren't confident something is wrong, check: read the code, run the tests. Leave it out if you still can't tell.
