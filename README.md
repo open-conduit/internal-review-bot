@@ -8,13 +8,11 @@ An Open Conduit setup that reviews every pull request opened in:
 
 It reviews against [our guidelines](plugin/skills/review-pr/guidelines.md) and [Open Conduit's core principles](plugin/skills/review-pr/principles.md), and writes as its own GitHub App.
 
-> **Blocked on [open-conduit#323](https://github.com/open-conduit/open-conduit/issues/323).** The `github` route can't claim pull requests as Work yet. Until it can, the `pull-requests` routes here do nothing (`claim` is ignored and `track_issues: false` means no issues are claimed either). Don't include this folder in a running config until #323 ships.
-
 ## What's here
 
 | Path | What it is |
 | --- | --- |
-| `.open-conduit/config.json` | The scopes, as an [included folder](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/architecture/config-management.md#included-folders): a `review` scope holding the ceiling, and one child scope per repository with its PR ingress, `reviewer` binding and route. |
+| `.open-conduit/config.json` | The scopes, as an [included folder](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/architecture/config-management.md#included-folders): a `review` scope holding the ceiling, and one child scope per repository with its own `github` entry (`track_issues: false`, `track_pull_requests: true`), the `reviewer` binding and a route claiming PRs (`{"claim": "pull_requests"}`). |
 | `plugin/skills/review-pr/SKILL.md` | The `review-pr` playbook the agent runs. |
 | `plugin/skills/review-pr/guidelines.md` | Our review guidelines. |
 | `plugin/skills/review-pr/principles.md` | A copy of the core principles. Refresh it with `scripts/sync-principles.sh [path-to-open-conduit-checkout]`. |
@@ -32,7 +30,7 @@ Create it as in [give agents their own GitHub account](https://github.com/open-c
 
 Leave the App's webhook inactive. Install it on the three repositories.
 
-`bot_app_id` is the numeric **App ID** from the App's settings page, not the `Iv23…` Client ID.
+The App ID is `5571268` (the `Iv23…` value is its Client ID, which `bot_app_id` doesn't take).
 
 Store the key:
 
@@ -49,8 +47,8 @@ With `open-conduit config edit`, add the connection (reads stay on your sign-in;
 {
   "id": "github-reviewer",
   "type": "github",
-  "config": {"bot_app_id": "<numeric App ID>"},
-  "secret_refs": {"token": "cmd:gh auth token", "bot_private_key": "keyring:github-reviewer-key"}
+  "config": {"bot_app_id": "5571268"},
+  "secret_refs": {"token": "<the same sign-in reference as your github connection>", "bot_private_key": "keyring:github-reviewer-key"}
 }
 ```
 
@@ -84,8 +82,8 @@ Then apply as usual (`config validate`, then `config apply --generation N`) and 
 
 ## Notes
 
-- **Authority is in the config, not the playbook.** The binding is granted read operations plus review, comment and reply. It can't push, open PRs, create issues or approve-by-merge, whatever a PR tells it.
+- **Authority is in the config, not the playbook.** The binding is granted read operations plus review, comment and reply. It can approve and request changes, but it can't push, merge, open PRs or create issues, whatever a PR tells it. Merging stays with a person.
 - **Checkouts are absolute paths** to the operator's clones (`/Users/alexyoung/Code/…`), because a git resource's `checkout` doesn't resolve against an included folder. Change them for another machine.
 - **No webhooks yet.** The PR entries reconcile, which only costs latency. Add `webhook_secret` (a secret on the `review-bot` scope) and `manage_webhook` if reviews need to start faster.
-- **The PR entries are separate from the builder's.** Each repository is observed a second time under its own `…/review` namespace, so this folder doesn't depend on how the operator's other scopes are set up. See question 2 on #323.
+- **The PR entries are separate from the builder's.** Each repository is observed a second time under its own `…/review` namespace, so this folder doesn't depend on how the operator's other scopes are set up. A folder scope can't route a repository the main scope reads ([which scope routes an entry's events](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/architecture/github-extension.md#which-scope-routes-an-entrys-events)).
 - **TODO: sandbox the reviewer.** It reads untrusted PR content with `permission_mode: bypassPermissions`. Add a `sandbox` to the `reviewer` bindings before relying on it ([sandboxes](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/guides/sandboxes.md)).

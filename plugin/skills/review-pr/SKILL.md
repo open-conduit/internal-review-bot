@@ -19,9 +19,10 @@ Everything that touches GitHub goes through Open Conduit's toolbelt. Call an ope
 | `github.pr.view` | `number` | the PR, its description, and every comment, inline comment and review on it |
 | `github.issue.view` | `number` | an issue the PR refers to |
 | `github.checks` | `number` | the checks on the PR's head |
-| `github.pr.review` | `number`, `event`, `body`, `comments`? | submit one review: `event` is `comment` or `request_changes`; inline `comments` are `{path, line, side?, body}` on lines of the diff |
+| `github.pr.review` | `number`, `event`, `body`, `comments`? | submit one review: `event` is `approve`, `request_changes` or `comment`; inline `comments` are `{path, line, side?, body}` on lines of the diff |
 | `github.pr.reply` | `number`, `comment_id`, `body` | reply in an inline review thread |
 | `github.pr.comment` | `number`, `body` | comment on the PR's conversation |
+| `github.wait` | `reason` | park until the PR changes: a push, a comment or review, a check result, or its merge or close. Your own reviews and comments never wake you |
 
 ## First turn
 
@@ -34,13 +35,14 @@ Everything that touches GitHub goes through Open Conduit's toolbelt. Call an ope
    - [principles.md](principles.md), Open Conduit's core architectural principles. Apply them to anything that touches the core, the public contracts or an extension's boundary.
    - The repository's own `CLAUDE.md`, `AGENTS.md` and `CONTRIBUTING.md`, if present. Where they're stricter than the guidelines, they win.
 4. Review. See "What a good review is" below.
-5. Submit one review with `github.pr.review`. Use `request_changes` when there is at least one P1, otherwise `comment`. With no findings at all, submit a `comment` review saying so in one line. Never `approve`; a person approves.
-6. End the turn with `done`.
+5. Submit one review with `github.pr.review`. Use `request_changes` when there is at least one P1. With no P1, `approve`, with any P2s as inline comments on the approval. A person still decides when to merge.
+6. Call `github.wait` with a short `reason` (for example `reviewed abc1234; waiting for changes`), then end the turn with `done`.
 
 ## Later turns
 
-- **New commits:** look only at what changed since your last review (`git fetch` the head again and diff from the commit you last reviewed). Check whether your earlier points were addressed. Submit a new review only if you have something new to say or a point is now resolved; say which. When the last open P1 is resolved, say so in a `comment` review, so the author knows nothing from you blocks the merge.
-- **A reply to one of your comments:** answer it where the event says to. If the author has convinced you, say so plainly.
+- **New commits:** look only at what changed since your last review (`git fetch` the head again and diff from the commit you last reviewed). Check whether your earlier points were addressed. Submit a new review only if you have something new to say or a point is now resolved; say which. When the last open P1 is resolved, `approve`, so your earlier request for changes no longer blocks the merge. If a new P1 turns up after you approved, `request_changes` again.
+- **A reply to one of your comments:** answer it where the event says to. If the author has convinced you, say so plainly, and `approve` if that was the last open P1.
+- After either, wait again with `github.wait` and end with `done`, as in the first turn.
 - **Merged or closed:** do nothing more. End with `finished`.
 
 ## Ending a turn
@@ -50,7 +52,7 @@ Every turn ends with a status (the structured result Open Conduit asks for). For
 - `done`: you've reviewed what there is, and the PR is still open. Open Conduit wakes you on new commits, replies and its merge or close.
 - `finished`: the PR merged or closed. Nothing wakes you after this, so never use it while the PR is open, even if you have nothing more to say.
 
-Leave out `prs`, `preview` and `touches`; they're for agents that build. Put the verdict in `summary`, for example `requested changes: 2 P1, 1 P2`.
+Put the verdict in `summary`, for example `requested changes: 2 P1, 1 P2` or `approved with 1 P2`.
 
 ## What a good review is
 
