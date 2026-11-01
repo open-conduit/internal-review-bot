@@ -27,7 +27,7 @@ Everything that touches GitHub goes through Open Conduit's toolbelt. Call an ope
 ## First turn
 
 1. Read the PR with `github.pr.view`, and any issue it refers to.
-2. Get the code. Your workspace is a fresh checkout of the base branch. Fetch the PR's head and diff against the base:
+2. Get the code. Your workspace is a worktree of the repository, kept for this PR across your turns; don't commit in it. Fetch the PR's head and diff against the base:
    `git fetch origin pull/<number>/head:pr-<number> && git diff origin/<base>...pr-<number>`
    Read the changed files in full where the diff alone doesn't show the context.
 3. Read the rules, in this order:
