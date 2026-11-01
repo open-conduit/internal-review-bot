@@ -21,10 +21,56 @@
           "github.pr.review",
           "github.checks",
           "github.attachment.get",
-          "github.wait"
+          "github.wait",
+          "introspection.report-issue",
+          "introspection.correction",
+          "introspection.problem",
+          "introspection.evidence",
+          "introspection.reports",
+          "introspection.report.resolve",
+          "introspection.notes.resolve",
+          "github.issue.list",
+          "github.issue.create",
+          "github.issue.comment"
         ],
         "read_scopes": []
-      }
+      },
+      "bindings": [
+        {
+          "name": "triage",
+          "executor": "claude-code",
+          "requires": {
+            "toolbelt": "mcp"
+          },
+          "operations": [
+            "introspection.evidence",
+            "introspection.reports",
+            "introspection.report.resolve",
+            "introspection.notes.resolve",
+            "github.issue.list",
+            "github.issue.view",
+            "github.issue.create",
+            "github.issue.comment"
+          ],
+          "secret_names": [],
+          "config": {
+            "playbook": "triage-reports",
+            "model": "opus",
+            "permission_mode": "bypassPermissions"
+          }
+        }
+      ],
+      "routes": [
+        {
+          "name": "triage",
+          "handler": "introspection",
+          "binding": "triage",
+          "active_policy": "queue",
+          "config": {
+            "work": "triage"
+          }
+        }
+      ]
     },
     {
       "id": "review-open-conduit",
@@ -53,7 +99,10 @@
             "github.pr.review",
             "github.checks",
             "github.attachment.get",
-            "github.wait"
+            "github.wait",
+            "introspection.report-issue",
+            "introspection.correction",
+            "introspection.problem"
           ],
           "secret_names": [],
           "config": {
@@ -101,6 +150,18 @@
             "webhook_secret": "github_webhook",
             "manage_webhook": true
           }
+        },
+        {
+          "name": "introspection",
+          "type": "introspection",
+          "secret_names": [],
+          "config": {
+            "triage": {
+              "cron": "0 9 * * *",
+              "time_zone": "Europe/London",
+              "file_issues": true
+            }
+          }
         }
       ]
     },
@@ -131,7 +192,10 @@
             "github.pr.review",
             "github.checks",
             "github.attachment.get",
-            "github.wait"
+            "github.wait",
+            "introspection.report-issue",
+            "introspection.correction",
+            "introspection.problem"
           ],
           "secret_names": [],
           "config": {
@@ -179,6 +243,18 @@
             "webhook_secret": "github_webhook",
             "manage_webhook": true
           }
+        },
+        {
+          "name": "introspection",
+          "type": "introspection",
+          "secret_names": [],
+          "config": {
+            "triage": {
+              "cron": "0 9 * * *",
+              "time_zone": "Europe/London",
+              "file_issues": true
+            }
+          }
         }
       ]
     },
@@ -209,7 +285,10 @@
             "github.pr.review",
             "github.checks",
             "github.attachment.get",
-            "github.wait"
+            "github.wait",
+            "introspection.report-issue",
+            "introspection.correction",
+            "introspection.problem"
           ],
           "secret_names": [],
           "config": {
@@ -256,6 +335,18 @@
             "track_pull_requests": true,
             "webhook_secret": "github_webhook",
             "manage_webhook": true
+          }
+        },
+        {
+          "name": "introspection",
+          "type": "introspection",
+          "secret_names": [],
+          "config": {
+            "triage": {
+              "cron": "0 9 * * *",
+              "time_zone": "Europe/London",
+              "file_issues": true
+            }
           }
         }
       ]
