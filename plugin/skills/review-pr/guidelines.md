@@ -1,11 +1,19 @@
 # Review guidelines
 
-<!-- TODO: write these. The playbook reads this file on every review. -->
+Examine code for:
 
-Suggested sections:
+- Security
+- Reliability
+- Work durability
+- Correctness
+- Performance
+- Adherence to architectural principles
+- Consistency
 
-## Must fix before merge
+When assessing, consider severity as:
 
-## Should fix
+P1 - this blocks PR merge. For example, breach of core principle, loss of work durability, any security issue
 
-## Don't comment on
+P2 - should probably be fixed before merge. For example, would perform poorly at scale, inconsistent style or approach with repository.
+
+P3 - nit pick. No real effect on end user. Do not comment on these.
