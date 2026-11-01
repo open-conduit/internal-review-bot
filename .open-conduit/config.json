@@ -1,0 +1,252 @@
+{
+  "version": 1,
+  "scopes": [
+    {
+      "id": "review",
+      "name": "review",
+      "authorization": {
+        "connections": [
+          "github-reviewer"
+        ],
+        "operations": [
+          "read_context",
+          "wait",
+          "declare_outcome",
+          "github.context",
+          "github.issue.view",
+          "github.pr.list",
+          "github.pr.view",
+          "github.pr.comment",
+          "github.pr.reply",
+          "github.pr.review",
+          "github.checks",
+          "github.attachment.get",
+          "github.wait"
+        ],
+        "read_scopes": []
+      }
+    },
+    {
+      "id": "review-open-conduit",
+      "name": "review open-conduit/open-conduit",
+      "parent": "review",
+      "bindings": [
+        {
+          "name": "reviewer",
+          "executor": "claude-code",
+          "connection": "github-reviewer",
+          "requires": {
+            "toolbelt": "mcp",
+            "workspace": true,
+            "resume": true
+          },
+          "operations": [
+            "read_context",
+            "wait",
+            "declare_outcome",
+            "github.context",
+            "github.issue.view",
+            "github.pr.list",
+            "github.pr.view",
+            "github.pr.comment",
+            "github.pr.reply",
+            "github.pr.review",
+            "github.checks",
+            "github.attachment.get",
+            "github.wait"
+          ],
+          "secret_names": [],
+          "config": {
+            "playbook": "review-pr",
+            "plugin_dir": "plugin",
+            "model": "opus",
+            "permission_mode": "bypassPermissions"
+          },
+          "resource": {
+            "provider": "git",
+            "config": {
+              "checkout": "/Users/alexyoung/Code/open-conduit",
+              "mode": "fresh"
+            }
+          }
+        }
+      ],
+      "routes": [
+        {
+          "name": "pull-requests",
+          "handler": "github",
+          "binding": "reviewer",
+          "active_policy": "queue",
+          "config": {
+            "claim": "pull_requests"
+          }
+        }
+      ],
+      "extensions": [
+        {
+          "name": "open-conduit-prs",
+          "type": "github",
+          "connection": "github-reviewer",
+          "secret_names": [],
+          "config": {
+            "namespace": "github/github.com/open-conduit/open-conduit/review",
+            "scope": "review-open-conduit",
+            "repo": "open-conduit/open-conduit",
+            "track_issues": false,
+            "projection": {
+              "disabled": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "review-extension-setup",
+      "name": "review open-conduit/extension-setup",
+      "parent": "review",
+      "bindings": [
+        {
+          "name": "reviewer",
+          "executor": "claude-code",
+          "connection": "github-reviewer",
+          "requires": {
+            "toolbelt": "mcp",
+            "workspace": true,
+            "resume": true
+          },
+          "operations": [
+            "read_context",
+            "wait",
+            "declare_outcome",
+            "github.context",
+            "github.issue.view",
+            "github.pr.list",
+            "github.pr.view",
+            "github.pr.comment",
+            "github.pr.reply",
+            "github.pr.review",
+            "github.checks",
+            "github.attachment.get",
+            "github.wait"
+          ],
+          "secret_names": [],
+          "config": {
+            "playbook": "review-pr",
+            "plugin_dir": "plugin",
+            "model": "opus",
+            "permission_mode": "bypassPermissions"
+          },
+          "resource": {
+            "provider": "git",
+            "config": {
+              "checkout": "/Users/alexyoung/Code/extension-setup",
+              "mode": "fresh"
+            }
+          }
+        }
+      ],
+      "routes": [
+        {
+          "name": "pull-requests",
+          "handler": "github",
+          "binding": "reviewer",
+          "active_policy": "queue",
+          "config": {
+            "claim": "pull_requests"
+          }
+        }
+      ],
+      "extensions": [
+        {
+          "name": "extension-setup-prs",
+          "type": "github",
+          "connection": "github-reviewer",
+          "secret_names": [],
+          "config": {
+            "namespace": "github/github.com/open-conduit/extension-setup/review",
+            "scope": "review-extension-setup",
+            "repo": "open-conduit/extension-setup",
+            "track_issues": false,
+            "projection": {
+              "disabled": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "review-open-conduit-jiminny",
+      "name": "review open-conduit/open-conduit-jiminny",
+      "parent": "review",
+      "bindings": [
+        {
+          "name": "reviewer",
+          "executor": "claude-code",
+          "connection": "github-reviewer",
+          "requires": {
+            "toolbelt": "mcp",
+            "workspace": true,
+            "resume": true
+          },
+          "operations": [
+            "read_context",
+            "wait",
+            "declare_outcome",
+            "github.context",
+            "github.issue.view",
+            "github.pr.list",
+            "github.pr.view",
+            "github.pr.comment",
+            "github.pr.reply",
+            "github.pr.review",
+            "github.checks",
+            "github.attachment.get",
+            "github.wait"
+          ],
+          "secret_names": [],
+          "config": {
+            "playbook": "review-pr",
+            "plugin_dir": "plugin",
+            "model": "opus",
+            "permission_mode": "bypassPermissions"
+          },
+          "resource": {
+            "provider": "git",
+            "config": {
+              "checkout": "/Users/alexyoung/Code/open-conduit-jiminny",
+              "mode": "fresh"
+            }
+          }
+        }
+      ],
+      "routes": [
+        {
+          "name": "pull-requests",
+          "handler": "github",
+          "binding": "reviewer",
+          "active_policy": "queue",
+          "config": {
+            "claim": "pull_requests"
+          }
+        }
+      ],
+      "extensions": [
+        {
+          "name": "open-conduit-jiminny-prs",
+          "type": "github",
+          "connection": "github-reviewer",
+          "secret_names": [],
+          "config": {
+            "namespace": "github/github.com/open-conduit/open-conduit-jiminny/review",
+            "scope": "review-open-conduit-jiminny",
+            "repo": "open-conduit/open-conduit-jiminny",
+            "track_issues": false,
+            "projection": {
+              "disabled": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
