@@ -28,7 +28,10 @@
           "introspection.evidence",
           "introspection.reports",
           "introspection.report.resolve",
-          "introspection.notes.resolve"
+          "introspection.notes.resolve",
+          "github.issue.list",
+          "github.issue.create",
+          "github.issue.comment"
         ],
         "read_scopes": []
       },
@@ -43,7 +46,11 @@
             "introspection.evidence",
             "introspection.reports",
             "introspection.report.resolve",
-            "introspection.notes.resolve"
+            "introspection.notes.resolve",
+            "github.issue.list",
+            "github.issue.view",
+            "github.issue.create",
+            "github.issue.comment"
           ],
           "secret_names": [],
           "config": {
@@ -152,7 +159,7 @@
             "triage": {
               "cron": "0 9 * * *",
               "time_zone": "Europe/London",
-              "file_issues": false
+              "file_issues": true
             }
           }
         }
@@ -245,7 +252,7 @@
             "triage": {
               "cron": "0 9 * * *",
               "time_zone": "Europe/London",
-              "file_issues": false
+              "file_issues": true
             }
           }
         }
@@ -338,7 +345,7 @@
             "triage": {
               "cron": "0 9 * * *",
               "time_zone": "Europe/London",
-              "file_issues": false
+              "file_issues": true
             }
           }
         }

@@ -13,7 +13,7 @@ When a pull request opens in a repository it watches (we run it on `open-conduit
 3. **It posts one review as its own GitHub App** (`openconduit-reviewer[bot]`). Each finding is inline, graded P1 (blocks merge) or P2 (should fix), and cites the rule it comes from. Any P1 means it requests changes; otherwise it approves.
 4. **It waits without running.** Between reviews nothing is running and nothing polls. The Work parks until something happens on the PR.
 5. **It follows up.** A push wakes it to review only what changed. A reply to one of its comments gets an answer. When the last P1 is fixed, it approves. When the PR merges or closes, its Work completes.
-6. **It reports what gets in its way.** When a tool refuses it, a doc is wrong or it has to work around something, it files a report with Open Conduit as it goes. Each morning a triage run per repository groups the day's reports by cause and writes them up in the run history.
+6. **It reports what gets in its way.** When a tool refuses it, a doc is wrong or it has to work around something, it files a report with Open Conduit as it goes. Each morning a triage run per repository groups the reports by cause and files each one as an issue in Open Conduit's own tracker, or comments on the issue that already covers it.
 
 A person still presses merge.
 
@@ -23,7 +23,7 @@ It's already earning its keep. On [open-conduit#327](https://github.com/open-con
 
 | File | What it is | Lines |
 | --- | --- | --- |
-| [`.open-conduit/config.json`](.open-conduit/config.json) | Which repositories to watch, which PRs become Work, which agent runs, and exactly what it may do | 348 (three near-identical repository scopes) |
+| [`.open-conduit/config.json`](.open-conduit/config.json) | Which repositories to watch, which PRs become Work, which agent runs, and exactly what it may do | 355 (three near-identical repository scopes) |
 | [`plugin/skills/review-pr/SKILL.md`](plugin/skills/review-pr/SKILL.md) | The playbook: how to review, when to approve, how to follow up | 64 |
 | [`plugin/skills/review-pr/guidelines.md`](plugin/skills/review-pr/guidelines.md) | What we look for, and how severe each kind of finding is | 19 |
 | [`plugin/skills/review-pr/principles.md`](plugin/skills/review-pr/principles.md) | A copy of Open Conduit's core principles (refresh with `scripts/sync-principles.sh`) | 124 |
@@ -137,9 +137,11 @@ Add a scope for the bot to sit under. It sets the most the reviewer may ever do,
       "github.pr.list", "github.pr.view", "github.pr.comment", "github.pr.reply", "github.pr.review",
       "github.checks", "github.attachment.get", "github.wait",
       "introspection.report-issue", "introspection.correction", "introspection.problem",
-      "introspection.evidence", "introspection.reports", "introspection.report.resolve", "introspection.notes.resolve"
+      "introspection.evidence", "introspection.reports", "introspection.report.resolve", "introspection.notes.resolve",
+      "github.issue.list", "github.issue.create", "github.issue.comment"
     ],
-    "read_scopes": []
+    "read_scopes": [],
+    "file_scopes": ["<the scope whose tracker gets the bot's issues>"]
   },
   "secret_refs": {"github_webhook": "keyring:github-webhook-secret"}
 }
@@ -170,6 +172,6 @@ Doctor should list `bot writer authenticated` for each `…/review` entry, and `
 - **The reviewer can approve.** Nothing merges unless a person, or your branch protection, lets it. If you'd rather it only comment, change step 5 of the playbook. An App's approval never satisfies a code-owner requirement.
 - **It can't do anything the config doesn't grant.** Pushing, merging, opening PRs and filing issues aren't granted, so they're refused, whatever a PR's text tells the agent. That's enforced by Open Conduit, not by the prompt.
 - **It watches each repository separately from any other agents.** Each repository gets its own `…/review` entry, so the bot works the same whether or not you also run Open Conduit agents on those repositories. If you do, an agent working an issue and the reviewer of its PR can go back and forth until the PR is ready.
-- **Triage writes up; it doesn't file.** Each repository's scope has an `introspection` entry with a daily `triage` (`file_issues: false`), and the `review` scope holds the `triage` binding and route its children inherit. The triage binding has no tracker operations, so every cause goes in its run's report (`open-conduit runs list --work-kind introspection.triage`). To file issues instead, give it an issue-tracker connection and operations and set `file_issues: true`; see [introspection](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/architecture/issue-reporting.md).
+- **Triage files issues where you point it.** Each repository's scope has an `introspection` entry with a daily `triage` (`file_issues: true`), and the `review` scope holds the `triage` binding and route its children inherit. [`.open-conduit/playbooks/triage-reports.md`](.open-conduit/playbooks/triage-reports.md) tells it which project to file in (ours is `open-conduit`). The bot's scope needs that project in `authorization.file_scopes` (step 5), and the issues are written through that project's own GitHub connection. To keep findings in run history instead, set `file_issues: false` and drop `file_scopes`. See [introspection](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/architecture/issue-reporting.md).
 - **Edits apply when you apply them.** Changing the guidelines or playbook takes effect on the next review. Changing `config.json` needs `config apply`, and a new or changed `webhook_secret` needs a restart.
 - **Consider a sandbox.** The reviewer reads untrusted PR content and runs with `permission_mode: bypassPermissions` so it can run tests unattended. Add a [`sandbox`](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/guides/sandboxes.md) to the `reviewer` bindings to limit what it can reach on your machine.
