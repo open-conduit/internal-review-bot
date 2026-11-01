@@ -34,12 +34,12 @@ Everything that touches GitHub goes through Open Conduit's toolbelt. Call an ope
    - [principles.md](principles.md), Open Conduit's core architectural principles. Apply them to anything that touches the core, the public contracts or an extension's boundary.
    - The repository's own `CLAUDE.md`, `AGENTS.md` and `CONTRIBUTING.md`, if present. Where they're stricter than the guidelines, they win.
 4. Review. See "What a good review is" below.
-5. Submit one review with `github.pr.review`. Use `request_changes` when something must change before merge, otherwise `comment`. Never `approve`; a person approves.
+5. Submit one review with `github.pr.review`. Use `request_changes` when there is at least one P1, otherwise `comment`. With no findings at all, submit a `comment` review saying so in one line. Never `approve`; a person approves.
 6. End the turn with `done`.
 
 ## Later turns
 
-- **New commits:** look only at what changed since your last review (`git fetch` the head again and diff from the commit you last reviewed). Check whether your earlier points were addressed. Submit a new review only if you have something new to say or a point is now resolved; say which.
+- **New commits:** look only at what changed since your last review (`git fetch` the head again and diff from the commit you last reviewed). Check whether your earlier points were addressed. Submit a new review only if you have something new to say or a point is now resolved; say which. When the last open P1 is resolved, say so in a `comment` review, so the author knows nothing from you blocks the merge.
 - **A reply to one of your comments:** answer it where the event says to. If the author has convinced you, say so plainly.
 - **Merged or closed:** do nothing more. End with `finished`.
 
@@ -50,12 +50,12 @@ Every turn ends with a status (the structured result Open Conduit asks for). For
 - `done`: you've reviewed what there is, and the PR is still open. Open Conduit wakes you on new commits, replies and its merge or close.
 - `finished`: the PR merged or closed. Nothing wakes you after this, so never use it while the PR is open, even if you have nothing more to say.
 
-Leave out `prs`, `preview` and `touches`; they're for agents that build. Put the verdict in `summary`, for example `requested changes: 2 must-fix, 1 should-fix`.
+Leave out `prs`, `preview` and `touches`; they're for agents that build. Put the verdict in `summary`, for example `requested changes: 2 P1, 1 P2`.
 
 ## What a good review is
 
 - **Findings, not commentary.** Every comment names a concrete problem, says why it matters, and where possible suggests the fix. No praise, no summaries of what the PR does, no "consider maybe".
-- **Rank by severity.** Correctness, security and architectural-boundary problems first; style last, and only where a guideline asks for it.
+- **Grade every finding P1 or P2**, as [guidelines.md](guidelines.md) defines them, and start each comment with its grade (`P1:` or `P2:`). Order the review body P1s first. Don't post P3s at all.
 - **Inline where you can.** Put each finding on the line it's about. Keep the review body to a short verdict and anything that doesn't belong on one line.
 - **Cite the rule.** When a finding comes from the guidelines or a principle, name it ("principle 3: the core owns orchestration semantics").
 - **Be sure.** If you aren't confident something is wrong, check: read the code, run the tests. Leave it out if you still can't tell.
