@@ -65,8 +65,7 @@
           "resource": {
             "provider": "git",
             "config": {
-              "checkout": "/Users/alexyoung/Code/open-conduit",
-              "mode": "fresh"
+              "checkout": "/Users/alexyoung/Code/open-conduit"
             }
           }
         }
@@ -144,8 +143,7 @@
           "resource": {
             "provider": "git",
             "config": {
-              "checkout": "/Users/alexyoung/Code/extension-setup",
-              "mode": "fresh"
+              "checkout": "/Users/alexyoung/Code/extension-setup"
             }
           }
         }
@@ -223,8 +221,7 @@
           "resource": {
             "provider": "git",
             "config": {
-              "checkout": "/Users/alexyoung/Code/open-conduit-jiminny",
-              "mode": "fresh"
+              "checkout": "/Users/alexyoung/Code/open-conduit-jiminny"
             }
           }
         }
