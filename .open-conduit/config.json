@@ -87,7 +87,9 @@
           "name": "open-conduit-prs",
           "type": "github",
           "connection": "github-reviewer",
-          "secret_names": [],
+          "secret_names": [
+            "github_webhook"
+          ],
           "config": {
             "namespace": "github/github.com/open-conduit/open-conduit/review",
             "scope": "review-open-conduit",
@@ -96,7 +98,9 @@
             "projection": {
               "disabled": true
             },
-            "track_pull_requests": true
+            "track_pull_requests": true,
+            "webhook_secret": "github_webhook",
+            "manage_webhook": true
           }
         }
       ]
@@ -162,7 +166,9 @@
           "name": "extension-setup-prs",
           "type": "github",
           "connection": "github-reviewer",
-          "secret_names": [],
+          "secret_names": [
+            "github_webhook"
+          ],
           "config": {
             "namespace": "github/github.com/open-conduit/extension-setup/review",
             "scope": "review-extension-setup",
@@ -171,7 +177,9 @@
             "projection": {
               "disabled": true
             },
-            "track_pull_requests": true
+            "track_pull_requests": true,
+            "webhook_secret": "github_webhook",
+            "manage_webhook": true
           }
         }
       ]
@@ -237,7 +245,9 @@
           "name": "open-conduit-jiminny-prs",
           "type": "github",
           "connection": "github-reviewer",
-          "secret_names": [],
+          "secret_names": [
+            "github_webhook"
+          ],
           "config": {
             "namespace": "github/github.com/open-conduit/open-conduit-jiminny/review",
             "scope": "review-open-conduit-jiminny",
@@ -246,7 +256,9 @@
             "projection": {
               "disabled": true
             },
-            "track_pull_requests": true
+            "track_pull_requests": true,
+            "webhook_secret": "github_webhook",
+            "manage_webhook": true
           }
         }
       ]
