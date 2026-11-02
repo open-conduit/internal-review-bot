@@ -149,7 +149,10 @@
               },
               "provider": {
                 "context": "orbstack"
-              }
+              },
+              "read": [
+                "/Users/alexyoung/Code/open-conduit-review-bot/plugin"
+              ]
             }
           }
         }
@@ -283,7 +286,10 @@
               },
               "provider": {
                 "context": "orbstack"
-              }
+              },
+              "read": [
+                "/Users/alexyoung/Code/open-conduit-review-bot/plugin"
+              ]
             }
           }
         }
@@ -417,7 +423,10 @@
               },
               "provider": {
                 "context": "orbstack"
-              }
+              },
+              "read": [
+                "/Users/alexyoung/Code/open-conduit-review-bot/plugin"
+              ]
             }
           }
         }
