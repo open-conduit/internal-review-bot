@@ -23,7 +23,8 @@ It's already earning its keep. On [open-conduit#327](https://github.com/open-con
 
 | File | What it is | Lines |
 | --- | --- | --- |
-| [`.open-conduit/config.json`](.open-conduit/config.json) | Which repositories to watch, which PRs become Work, which agent runs, and exactly what it may do | 359 (three near-identical repository scopes) |
+| [`.open-conduit/config.json`](.open-conduit/config.json) | Which repositories to watch, which PRs become Work, which agent runs, and exactly what it may do | 480 (three near-identical repository scopes) |
+| [`image/Dockerfile`](image/Dockerfile) | The container the reviewer runs in: claude, git and Go | 16 |
 | [`plugin/skills/review-pr/SKILL.md`](plugin/skills/review-pr/SKILL.md) | The playbook: how to review, when to approve, how to follow up | 66 |
 | [`plugin/skills/review-pr/guidelines.md`](plugin/skills/review-pr/guidelines.md) | What we look for, and how severe each kind of finding is | 19 |
 | [`plugin/skills/review-pr/principles.md`](plugin/skills/review-pr/principles.md) | A copy of Open Conduit's core principles (refresh with `scripts/sync-principles.sh`) | 124 |
@@ -62,7 +63,7 @@ Fork or clone this repository somewhere the daemon's user owns, for example `~/r
   "bindings": [{
     "name": "reviewer",
     "...": "keep the rest of the binding as it is",
-    "resource": {"provider": "git", "config": {"checkout": "/home/you/code/web"}}
+    "resource": {"provider": "git", "config": {"checkout": "/home/you/code/web", "mode": "clone"}}
   }],
   "routes": [{"name": "pull-requests", "handler": "github", "binding": "reviewer", "active_policy": "queue", "config": {"claim": "pull_requests"}}],
   "extensions": [{
@@ -84,7 +85,7 @@ Fork or clone this repository somewhere the daemon's user owns, for example `~/r
 }
 ```
 
-`checkout` must be an absolute path. Add `"drafts": true` to the route's `config` to review draft PRs as well.
+`checkout` must be an absolute path. The reviewer works in a clone of it (`"mode": "clone"`), never a worktree, because it runs in a container (step 6). Add `"drafts": true` to the route's `config` to review draft PRs as well.
 
 ### 3. Tell it what good looks like
 
@@ -143,7 +144,7 @@ Add a scope for the bot to sit under. It sets the most the reviewer may ever do,
     "read_scopes": [],
     "file_scopes": ["<the scope whose tracker gets the bot's issues>"]
   },
-  "secret_refs": {"github_webhook": "keyring:github-webhook-secret"}
+  "secret_refs": {"github_webhook": "keyring:github-webhook-secret", "claude-token": "keyring:claude-token"}
 }
 ```
 
@@ -156,7 +157,29 @@ open-conduit config include add ~/review-bot --parent review-bot
 open-conduit config check
 ```
 
-### 6. Turn it on
+### 6. Build its container
+
+The reviewer reads untrusted PR text and runs with `bypassPermissions` so it can run tests unattended, so each review runs in a Docker container of its own ([sandbox your agents](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/guides/sandboxes.md#containers)). It sees its clone of the repository and the playbook, and nothing else of your machine: not your credentials, not your `~/.claude`, not Open Conduit's state. It can reach Anthropic's API, `github.com` (to fetch the PR) and the Go module proxy, and nothing else. It needs no GitHub credential: the repositories are public, and everything it posts goes through its toolbelt.
+
+You need Docker Engine 28 or later ([OrbStack](https://orbstack.dev) on macOS). Pull the gateway image `open-conduit doctor` names, then build the reviewer's image and push it somewhere Docker can pull it by digest. A local registry is enough:
+
+```sh
+docker run -d --restart=always --name oc-registry -p 127.0.0.1:5180:5000 registry:2
+docker build -t localhost:5180/review-bot image
+docker push localhost:5180/review-bot
+docker inspect --format '{{index .RepoDigests 0}}' localhost:5180/review-bot
+```
+
+Put that digest in each `reviewer` binding's `container.image`, and set `provider.context` to your Docker context (`docker context ls`; `orbstack` on macOS, usually `default` on Linux). Add hosts to `network.allow` if your repositories build with something other than Go.
+
+Claude signs in inside the container with a long-lived token, not your own sign-in:
+
+```sh
+claude setup-token                                  # copy the token it prints
+pbpaste | open-conduit secret set claude-token      # or paste it on stdin
+```
+
+### 7. Turn it on
 
 ```sh
 open-conduit config validate "$(open-conduit config path)"   # prints the current generation, N
@@ -165,7 +188,7 @@ open-conduit service stop && open-conduit service start      # webhook routes ar
 open-conduit doctor --check-secrets
 ```
 
-Doctor should list `bot writer authenticated` for each `…/review` entry, and `hook ok` once the webhook is in place. Open a pull request and watch for a review from `<your-app>[bot]`. Each review shows up in `open-conduit runs list` with its transcript.
+Doctor should list `bot writer authenticated` for each `…/review` entry, `hook ok` once the webhook is in place, and a passing `container` check. Open a pull request and watch for a review from `<your-app>[bot]`. Each review shows up in `open-conduit runs list` with its transcript.
 
 ## Good to know
 
@@ -174,4 +197,4 @@ Doctor should list `bot writer authenticated` for each `…/review` entry, and `
 - **It watches each repository separately from any other agents.** Each repository gets its own `…/review` entry, so the bot works the same whether or not you also run Open Conduit agents on those repositories. If you do, an agent working an issue and the reviewer of its PR can go back and forth until the PR is ready.
 - **Triage files issues where you point it.** Each repository's scope has an `introspection` entry with a daily `triage` (`file_issues: true`), and the `review` scope holds the `triage` binding and route its children inherit. [`.open-conduit/playbooks/triage-reports.md`](.open-conduit/playbooks/triage-reports.md) tells it which project to file in (ours is `open-conduit`). The bot's scope needs that project in `authorization.file_scopes` (step 5), and the issues are written through that project's own GitHub connection. To keep findings in run history instead, set `file_issues: false` and drop `file_scopes`. See [introspection](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/architecture/issue-reporting.md).
 - **Edits apply when you apply them.** Changing the guidelines or playbook takes effect on the next review. Changing `config.json` needs `config apply`, and a new or changed `webhook_secret` needs a restart.
-- **Consider a sandbox.** The reviewer reads untrusted PR content and runs with `permission_mode: bypassPermissions` so it can run tests unattended. Add a [`sandbox`](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/guides/sandboxes.md) to the `reviewer` bindings to limit what it can reach on your machine.
+- **No Docker?** A [process sandbox](https://github.com/open-conduit/open-conduit/blob/main/site/src/content/docs/guides/sandboxes.md#process-sandboxes) (`sandbox` with srt) is the lighter alternative. Don't run the reviewer with neither: it would act on PR text with your account's access.

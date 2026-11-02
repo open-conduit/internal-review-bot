@@ -107,17 +107,49 @@
             "introspection.correction",
             "introspection.problem"
           ],
-          "secret_names": [],
+          "secret_names": [
+            "claude-token"
+          ],
           "config": {
             "playbook": "review-pr",
             "plugin_dir": "plugin",
             "model": "opus",
-            "permission_mode": "bypassPermissions"
+            "permission_mode": "bypassPermissions",
+            "workspace_mode": "clone",
+            "secret_env": {
+              "claude-token": "CLAUDE_CODE_OAUTH_TOKEN"
+            }
           },
           "resource": {
             "provider": "git",
             "config": {
-              "checkout": "/Users/alexyoung/Code/open-conduit"
+              "checkout": "/Users/alexyoung/Code/open-conduit",
+              "mode": "clone"
+            }
+          },
+          "container": {
+            "provider": "docker",
+            "config": {
+              "image": "localhost:5180/review-bot@sha256:d089cb5a612135c4f44bf3fc2fcc2d36103c256b5d69e595d67a28832a56deee",
+              "write": [
+                "{workspace}"
+              ],
+              "network": {
+                "allow": [
+                  "api.anthropic.com",
+                  "github.com",
+                  "proxy.golang.org",
+                  "sum.golang.org"
+                ]
+              },
+              "limits": {
+                "cpus": 4,
+                "memory": "8g",
+                "pids": 2048
+              },
+              "provider": {
+                "context": "orbstack"
+              }
             }
           }
         }
@@ -209,17 +241,49 @@
             "introspection.correction",
             "introspection.problem"
           ],
-          "secret_names": [],
+          "secret_names": [
+            "claude-token"
+          ],
           "config": {
             "playbook": "review-pr",
             "plugin_dir": "plugin",
             "model": "opus",
-            "permission_mode": "bypassPermissions"
+            "permission_mode": "bypassPermissions",
+            "workspace_mode": "clone",
+            "secret_env": {
+              "claude-token": "CLAUDE_CODE_OAUTH_TOKEN"
+            }
           },
           "resource": {
             "provider": "git",
             "config": {
-              "checkout": "/Users/alexyoung/Code/extension-setup"
+              "checkout": "/Users/alexyoung/Code/extension-setup",
+              "mode": "clone"
+            }
+          },
+          "container": {
+            "provider": "docker",
+            "config": {
+              "image": "localhost:5180/review-bot@sha256:d089cb5a612135c4f44bf3fc2fcc2d36103c256b5d69e595d67a28832a56deee",
+              "write": [
+                "{workspace}"
+              ],
+              "network": {
+                "allow": [
+                  "api.anthropic.com",
+                  "github.com",
+                  "proxy.golang.org",
+                  "sum.golang.org"
+                ]
+              },
+              "limits": {
+                "cpus": 4,
+                "memory": "8g",
+                "pids": 2048
+              },
+              "provider": {
+                "context": "orbstack"
+              }
             }
           }
         }
@@ -311,17 +375,49 @@
             "introspection.correction",
             "introspection.problem"
           ],
-          "secret_names": [],
+          "secret_names": [
+            "claude-token"
+          ],
           "config": {
             "playbook": "review-pr",
             "plugin_dir": "plugin",
             "model": "opus",
-            "permission_mode": "bypassPermissions"
+            "permission_mode": "bypassPermissions",
+            "workspace_mode": "clone",
+            "secret_env": {
+              "claude-token": "CLAUDE_CODE_OAUTH_TOKEN"
+            }
           },
           "resource": {
             "provider": "git",
             "config": {
-              "checkout": "/Users/alexyoung/Code/open-conduit-jiminny"
+              "checkout": "/Users/alexyoung/Code/open-conduit-jiminny",
+              "mode": "clone"
+            }
+          },
+          "container": {
+            "provider": "docker",
+            "config": {
+              "image": "localhost:5180/review-bot@sha256:d089cb5a612135c4f44bf3fc2fcc2d36103c256b5d69e595d67a28832a56deee",
+              "write": [
+                "{workspace}"
+              ],
+              "network": {
+                "allow": [
+                  "api.anthropic.com",
+                  "github.com",
+                  "proxy.golang.org",
+                  "sum.golang.org"
+                ]
+              },
+              "limits": {
+                "cpus": 4,
+                "memory": "8g",
+                "pids": 2048
+              },
+              "provider": {
+                "context": "orbstack"
+              }
             }
           }
         }
