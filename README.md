@@ -170,7 +170,7 @@ docker push localhost:5180/review-bot
 docker inspect --format '{{index .RepoDigests 0}}' localhost:5180/review-bot
 ```
 
-Put that digest in each `reviewer` binding's `container.image`, and set `provider.context` to your Docker context (`docker context ls`; `orbstack` on macOS, usually `default` on Linux). Add hosts to `network.allow` if your repositories build with something other than Go.
+Put that digest in each `reviewer` binding's `container.image`, set `read` to the absolute path of this folder's `plugin` directory (the container reads the playbook from there), and set `provider.context` to your Docker context (`docker context ls`; `orbstack` on macOS, usually `default` on Linux). Add hosts to `network.allow` if your repositories build with something other than Go.
 
 Claude signs in inside the container with a long-lived token, not your own sign-in:
 
