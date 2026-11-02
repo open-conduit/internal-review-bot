@@ -6,7 +6,8 @@
       "name": "review",
       "authorization": {
         "connections": [
-          "github-reviewer"
+          "github-reviewer",
+          "posthog"
         ],
         "operations": [
           "read_context",
@@ -150,7 +151,15 @@
             },
             "track_pull_requests": true,
             "webhook_secret": "github_webhook",
-            "manage_webhook": true
+            "manage_webhook": true,
+            "admit": {
+              "authors": [
+                "OWNER",
+                "MEMBER",
+                "COLLABORATOR",
+                "CONTRIBUTOR"
+              ]
+            }
           }
         },
         {
@@ -244,7 +253,15 @@
             },
             "track_pull_requests": true,
             "webhook_secret": "github_webhook",
-            "manage_webhook": true
+            "manage_webhook": true,
+            "admit": {
+              "authors": [
+                "OWNER",
+                "MEMBER",
+                "COLLABORATOR",
+                "CONTRIBUTOR"
+              ]
+            }
           }
         },
         {
@@ -338,7 +355,15 @@
             },
             "track_pull_requests": true,
             "webhook_secret": "github_webhook",
-            "manage_webhook": true
+            "manage_webhook": true,
+            "admit": {
+              "authors": [
+                "OWNER",
+                "MEMBER",
+                "COLLABORATOR",
+                "CONTRIBUTOR"
+              ]
+            }
           }
         },
         {
